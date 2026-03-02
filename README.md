@@ -14,7 +14,7 @@ Financial institutions process thousands of transactions daily, making it imposs
 Fraud analysts at small-to-mid-size financial institutions or fintech companies who need to review flagged transactions efficiently. Specifically, analysts who manage an investigation queue and need to quickly determine which cases require immediate action versus routine review.
 
 ## Architecture
-![Architecture Diagram](docs/architecture.png)
+![Architecture Diagram](architecture.png)
 
 ## Component Breakdown
 

@@ -1,0 +1,12 @@
+Case Management & Dashboard
+Owner: Andrew Skoblov
+Description
+Creates investigation cases for high-risk transactions and provides a Streamlit dashboard for analysts to review the fraud alert queue, update case statuses, and view trend analytics.
+Status
+
+ Design complete
+ Sample data prepared
+ Initial implementation
+ Testing
+ Integration with other components
+ Documentation complete

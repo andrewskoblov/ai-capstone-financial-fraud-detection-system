@@ -69,4 +69,4 @@ Fraud analysts at small-to-mid-size financial institutions or fintech companies 
 | 15 | Final presentation |
 
 ## Reflection
-[Add 1 paragraph here about your planning process - what decisions your group made, any challenges you anticipate, and how you divided the work]
+Our group picked the Financial Fraud Detection System because we all found the problem interesting and felt it matched the tools we are learning in this course. We split the work based on what each person wanted to focus on, with Ergi taking data ingestion, Thomas handling the AI analysis, and Andrew building the dashboard and case management side. One thing we think could be tricky is making sure the data passing between components stays consistent, so we plan to agree on a shared record format early on. Overall we feel good about the project and think it will give us something practical to show in our portfolios.

@@ -1,12 +1,98 @@
-Case Management & Dashboard
-Owner: Andrew Skoblov
-Description
-Creates investigation cases for high-risk transactions and provides a Streamlit dashboard for analysts to review the fraud alert queue, update case statuses, and view trend analytics.
-Status
+Readme · MD
+Copy
 
- Design complete
- Sample data prepared
- Initial implementation
- Testing
- Integration with other components
- Documentation complete
+# Case Management & Dashboard
+ 
+**Owner:** Andrew Skoblov  
+**Component:** Specialist (Component 3)  
+**Project:** Financial Fraud Detection System
+ 
+---
+ 
+## What It Does
+ 
+This component monitors the shared Airtable base for high-risk transactions flagged by the AI Analysis component, automatically creates investigation cases for analyst review, and provides a Streamlit dashboard where fraud analysts can view the alert queue, filter by risk level and case status, and mark cases as resolved.
+ 
+---
+ 
+## How It Connects to Other Components
+ 
+**Input — reads from Transactions table:**
+- Polls for records where `status = analyzed` AND `risk_score >= 0.7`
+- Reads: `transaction_id`, `account_id`, `amount`, `merchant`, `location`, `risk_score`, `anomaly_flags`, `ai_explanation`
+**Output — writes to two places:**
+- Creates new records in the Cases table with `status = open`
+- Updates the source transaction's `status` to `escalated`
+**Dashboard — reads from Cases table:**
+- Displays all cases with filtering by `status` (open, in_review, resolved) and `risk_score`
+- Allows analysts to update case status and add notes
+---
+ 
+## Architecture
+ 
+```
+Airtable Transactions table
+        ↓ (status=analyzed, risk_score >= 0.7)
+n8n Case Management Workflow
+        ↓ creates Case record
+Airtable Cases table
+        ↓ reads
+Streamlit Dashboard
+        ↓ analyst updates status
+Airtable Cases table (updated)
+```
+ 
+---
+ 
+## Setup Instructions
+ 
+### Accounts & Keys Required
+- **Airtable account** with access to the shared Financial Fraud Detection base
+- **Airtable API key** (Personal Access Token from airtable.com/create/tokens)
+- **n8n Cloud account** (jjmopalinski.app.n8n.cloud)
+- **Python 3.9+** with Streamlit installed
+### n8n Workflow Setup
+1. Import the case management workflow JSON from this folder
+2. Add your Airtable credentials in n8n (Settings → Credentials → Airtable)
+3. Verify the Airtable base ID matches: `appvjZLCBEn2MwvZd`
+4. Set the poll interval (recommended: every 5 minutes)
+5. Activate the workflow
+### Streamlit Dashboard Setup
+1. Clone the repo and navigate to `Case Management & Dashboard/`
+2. Install dependencies: `pip install streamlit pyairtable pandas`
+3. Create a `.env` file with:
+```
+AIRTABLE_API_KEY=your_personal_access_token
+AIRTABLE_BASE_ID=appvjZLCBEn2MwvZd
+```
+4. Run: `streamlit run dashboard.py`
+---
+ 
+## How to Test
+ 
+1. In Airtable, find any transaction with `status = analyzed` and `risk_score >= 0.7`
+2. Manually trigger the n8n case management workflow
+3. Verify a new Case record appears in the Cases table with `status = open`
+4. Verify the source transaction's status updated to `escalated`
+5. Open the Streamlit dashboard and confirm the new case appears in the alert queue
+6. Change the case status to `in_review` in the dashboard and verify it updates in Airtable
+---
+ 
+## Known Limitations
+ 
+- Dashboard currently requires manual refresh to show new cases (no auto-refresh)
+- Case management workflow polls on a schedule — not real-time. There is up to a 5-minute delay between a transaction being analyzed and a case being created
+- Streamlit dashboard is not yet deployed to a public URL — runs locally only
+- `assigned_to` field in Cases table is not yet connected to any user authentication system
+- No email or Slack notification when a new high-risk case is created
+---
+ 
+## Files in This Folder
+ 
+```
+Case Management & Dashboard/
+├── dashboard.py              # Streamlit dashboard app
+├── case_management_workflow.json  # n8n workflow export
+├── requirements.txt          # Python dependencies
+└── README.md                 # This file
+```

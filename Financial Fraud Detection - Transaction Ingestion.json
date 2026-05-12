@@ -1,0 +1,249 @@
+{
+  "name": "Financial Fraud Detection - Transaction Ingestion",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4dd5a3ad-4540-406a-b3c7-aa7b5849d383",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/andrewskoblov/ai-capstone-financial-fraud-detection-system/refs/heads/main/transactions_sample.csv",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "1f00fcb8-463f-423c-81ea-2b0d832c650c",
+      "name": "Fetch CSV"
+    },
+    {
+      "parameters": {
+        "jsCode": "const csvText = $input.item.json.data;\nconst lines = csvText.trim().split('\\n');\nconst headers = lines[0].split(',');\n\nreturn lines.slice(1).map(line => {\n  const values = line.split(',');\n  return {\n    json: {\n      transaction_id: values[0]?.trim(),\n      timestamp: new Date(values[1]?.trim()).toISOString(),\n      account_id: values[2]?.trim(),\n      amount: parseFloat(values[3]?.trim()),\n      merchant: values[4]?.trim(),\n      location: values[5]?.trim(),\n      status: \"unprocessed\",\n      source: \"csv_ingestion\"\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "923e66bc-14d1-403c-a6de-d242c47181ef",
+      "name": "Parse & Normalize"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOBt37iEsQy2Nbd",
+          "mode": "list",
+          "cachedResultName": "Fraud Detection Ingestion",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl2C9rj992bi58A8",
+          "mode": "list",
+          "cachedResultName": "Transactions",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd/tbl2C9rj992bi58A8"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $json.timestamp }}",
+            "source": "={{ $json.source }}",
+            "status": "={{ $json.status }}",
+            "location": "={{ $json.location }}",
+            "merchant": "={{ $json.merchant }}",
+            "amount": "={{ $json.amount }}",
+            "account_id": "={{ $json.account_id }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "transaction_id": "={{ $json.transaction_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "transaction_id",
+              "displayName": "transaction_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "amount",
+              "displayName": "amount",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "merchant",
+              "displayName": "merchant",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "6dba47ad-bc94-43a0-b7d1-68b303c6fc10",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EPZNUuivnSzdnhow",
+          "name": "Final Airtable Capstone"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse & Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Normalize": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f8752b65-099d-4ae5-bc6c-ef4fe1e2301a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a69ec37954977b88a479ebfa185a30fc778ae1a13872bdbe9e26e7b8edafd875"
+  },
+  "id": "IK97RsEJBGO5QnF1",
+  "tags": []
+}

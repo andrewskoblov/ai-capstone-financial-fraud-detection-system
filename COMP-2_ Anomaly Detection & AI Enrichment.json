@@ -1,0 +1,519 @@
+{
+  "name": "COMP-2: Anomaly Detection & AI Enrichment",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        0
+      ],
+      "id": "c9c99cf7-d22a-40f0-96f3-60a98339e1ad",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOBt37iEsQy2Nbd",
+          "mode": "list",
+          "cachedResultName": "Fraud Detection Ingestion",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl2C9rj992bi58A8",
+          "mode": "list",
+          "cachedResultName": "Transactions",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd/tbl2C9rj992bi58A8"
+        },
+        "filterByFormula": "{risk_score} = \"\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "624102e0-5fb4-43bc-85e7-a859cc85be96",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Csrgpj95tIwnCUjT",
+          "name": "capstone token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "850bd0ee-a376-4d35-a479-f58d69652c7c",
+              "leftValue": "={{ $json.fields.amount }}",
+              "rightValue": 5000,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ true }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        272
+      ],
+      "id": "668f3a89-faea-41a3-bb42-6b0e1cd8c832",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOBt37iEsQy2Nbd",
+          "mode": "list",
+          "cachedResultName": "Fraud Detection Ingestion",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl2C9rj992bi58A8",
+          "mode": "list",
+          "cachedResultName": "Transactions",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd/tbl2C9rj992bi58A8"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Loop Over Items').item.json.id }}",
+            "risk_score": "={{ $('Groq_HTTP').item.json.choices[0].message.content.includes('High') ? 0.95 : ($('Groq_HTTP').item.json.choices[0].message.content.includes('Medium') ? 0.55 : 0.10) }}",
+            "ai_explanation": "={{ $('Groq_HTTP').item.json.choices[0].message.content.split('|')[1].trim() }}",
+            "anomaly_flags": "={{ $('Groq_HTTP').item.json.choices[0].message.content.split('|')[0].trim() }}",
+            "status": "processed"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "transaction_id",
+              "displayName": "transaction_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "amount",
+              "displayName": "amount",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "merchant",
+              "displayName": "merchant",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "risk_score",
+              "displayName": "risk_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "anomaly_flags",
+              "displayName": "anomaly_flags",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ai_explanation",
+              "displayName": "ai_explanation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        384
+      ],
+      "id": "02453130-5c69-47f9-8d28-7cdb92be7fe5",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Csrgpj95tIwnCUjT",
+          "name": "capstone token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        144,
+        0
+      ],
+      "id": "bf69fad8-687c-4a2b-b3a8-d505bc0ab3fe",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b0169c3-b557-4a97-b05a-6227c86986ca",
+              "name": "anomaly_flag",
+              "value": "Normal",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        400
+      ],
+      "id": "bac2fb20-eb96-4c35-bf07-92f3d62e01c2",
+      "name": "Normal"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "014f2199-ca7d-4bb1-9000-80bc86f957b6",
+              "name": "anomaly_flag",
+              "value": "=High",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        144
+      ],
+      "id": "0dab8966-53cb-4de1-8775-ff51ab281bbe",
+      "name": "High Value"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.1-8b-instant\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Analyze this transaction for financial fraud risk. Merchant: {{ $('Loop Over Items').item.json.fields.merchant }}, Location: {{ $('Loop Over Items').item.json.fields.location }}, Amount: ${{ $('Loop Over Items').item.json.fields.amount }}. Based on standard cybersecurity and fraud metrics (like high-value cross-border wires being High Risk, local small transactions being Low Risk), classify this. Your output must follow this exact format: [RISK_TAG] | [2-sentence explanation]. Example: High Risk | This transaction is an anomaly due to... Do not write anything else besides that exact format.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        704,
+        272
+      ],
+      "id": "b19be483-4032-4539-be50-5ea0765d1cac",
+      "name": "Groq_HTTP",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ldSIFx40MSrQuWiS",
+          "name": "Groq API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "=httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={\n  \"inputs\": \"Review this financial transaction for potential risk analysis. Type/Merchant: {{ $('Loop Over Items').item.json.fields.merchant }}, Location: {{ $('Loop Over Items').item.json.fields.location }}, Amount: ${{ $('Loop Over Items').item.json.fields.amount }}.\",\n  \"parameters\": {\n    \"candidate_labels\": [\"Low Risk\", \"Medium Risk\", \"High Risk\"]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        544,
+        272
+      ],
+      "id": "cc364a98-7dae-47f1-9653-38e326f1924a",
+      "name": "Hugging_Face_HTTP",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XPJR9luU38Vm7AsB",
+          "name": "capstone http hf token"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "High Value",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normal": {
+      "main": [
+        [
+          {
+            "node": "Hugging_Face_HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Value": {
+      "main": [
+        [
+          {
+            "node": "Hugging_Face_HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq_HTTP": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hugging_Face_HTTP": {
+      "main": [
+        [
+          {
+            "node": "Groq_HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4b9f5c50-f1b6-4c64-95f2-97ef6003eb8c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a69ec37954977b88a479ebfa185a30fc778ae1a13872bdbe9e26e7b8edafd875"
+  },
+  "id": "YYiJDpRvuw9gHPYg",
+  "tags": []
+}

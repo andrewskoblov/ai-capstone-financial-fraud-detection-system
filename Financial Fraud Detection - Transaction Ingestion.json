@@ -185,7 +185,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        672,
+        688,
         0
       ],
       "id": "6dba47ad-bc94-43a0-b7d1-68b303c6fc10",
@@ -239,7 +239,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "f8752b65-099d-4ae5-bc6c-ef4fe1e2301a",
+  "versionId": "07cc3205-158c-4801-85d8-764e5e2ec255",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a69ec37954977b88a479ebfa185a30fc778ae1a13872bdbe9e26e7b8edafd875"

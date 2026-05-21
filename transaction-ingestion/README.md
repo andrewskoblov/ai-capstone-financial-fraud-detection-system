@@ -75,8 +75,8 @@ Structured records written to the **Transactions** table in Airtable with the fo
 
 | File | Description |
 |---|---|
-| `workflow.json` | Exported n8n workflow |
-| `transactions_sample.csv` | Sample transaction dataset (35 records) |
+| [`../workflows/transaction-ingestion.json`](../workflows/transaction-ingestion.json) | Exported n8n workflow |
+| [`../data/transactions_sample.csv`](../data/transactions_sample.csv) | Sample transaction dataset (35 records) |
 | `README.md` | This file |
 
 ---

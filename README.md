@@ -51,6 +51,15 @@ This project solves that by connecting three components:
 Dashboard folder: [`case-management-dashboard`](case-management-dashboard)  
 Dashboard app: [`case-management-dashboard/dashboard.py`](case-management-dashboard/dashboard.py)
 
+## Quick Links
+
+- Case management dashboard: [`case-management-dashboard/`](case-management-dashboard)
+- Transaction ingestion component: [`transaction-ingestion/`](transaction-ingestion)
+- n8n workflow exports: [`workflows/`](workflows)
+- Sample data: [`data/transactions_sample.csv`](data/transactions_sample.csv)
+- Project docs: [`docs/`](docs)
+- Prompt logs: [`docs/prompt-logs/`](docs/prompt-logs)
+
 ## Dashboard Quick Start
 
 ```bash
@@ -82,7 +91,7 @@ Suggested talk track:
 
 - Simulated transaction records for testing
 - Airtable tables for shared component data
-- CSV sample data in [`transactions_sample.csv`](transactions_sample.csv)
+- CSV sample data in [`data/transactions_sample.csv`](data/transactions_sample.csv)
 
 ## Success Criteria
 
@@ -101,9 +110,17 @@ Suggested talk track:
 │   ├── requirements.txt
 │   └── README.md
 ├── transaction-ingestion/
+├── workflows/
+│   ├── anomaly-detection-ai-enrichment.json
+│   └── transaction-ingestion.json
+├── data/
+│   └── transactions_sample.csv
 ├── docs/
+│   ├── component-notes/
+│   ├── prompt-logs/
+│   └── proposal.md
 ├── architecture.png
-├── transactions_sample.csv
+├── LICENSE
 └── README.md
 ```
 

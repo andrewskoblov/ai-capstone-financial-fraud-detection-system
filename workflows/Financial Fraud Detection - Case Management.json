@@ -1,0 +1,453 @@
+{
+  "name": "Financial Fraud Detection - Case Management",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "cfb253a5-d3a8-4a9f-8ab5-2ef2d3abfb38",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOBt37iEsQy2Nbd",
+          "mode": "list",
+          "cachedResultName": "Fraud Detection Ingestion",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl2C9rj992bi58A8",
+          "mode": "list",
+          "cachedResultName": "Transactions",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd/tbl2C9rj992bi58A8"
+        },
+        "filterByFormula": "AND({status} = \"processed\", {risk_score} > 0.7)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "62cc55ee-b93f-4327-a01f-40ba18a46592",
+      "name": "Get High Risk Transactions",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EPZNUuivnSzdnhow",
+          "name": "Final Airtable Capstone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        256,
+        0
+      ],
+      "id": "db186335-fb77-4c8b-a986-703e9ce9f273",
+      "name": "Loop Cases"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOBt37iEsQy2Nbd",
+          "mode": "list",
+          "cachedResultName": "Fraud Detection Ingestion",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblj0MgKU9f54nxex",
+          "mode": "list",
+          "cachedResultName": "Cases",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd/tblj0MgKU9f54nxex"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "case_id": "={{ \"CASE-\" + $json.fields.transaction_id }}",
+            "transaction_id": "={{ $json.fields.transaction_id }}",
+            "Status": "open",
+            "risk_score": "={{ $json.fields.risk_score }}",
+            "source": "anomaly_detection",
+            "created_at": "={{ new Date().toISOString() }}",
+            "assigned_to": "{{ $json.fields.risk_score >= 0.9 ? 'Senior Analyst' : 'Junior Analyst' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "case_id",
+              "displayName": "case_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "transaction_id",
+              "displayName": "transaction_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "assigned_to",
+              "displayName": "assigned_to",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "risk_score",
+              "displayName": "risk_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        16
+      ],
+      "id": "3173a4aa-17ea-4640-a8b2-68554ca007f6",
+      "name": "Create Case",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EPZNUuivnSzdnhow",
+          "name": "Final Airtable Capstone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOBt37iEsQy2Nbd",
+          "mode": "list",
+          "cachedResultName": "Fraud Detection Ingestion",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl2C9rj992bi58A8",
+          "mode": "list",
+          "cachedResultName": "Transactions",
+          "cachedResultUrl": "https://airtable.com/appOBt37iEsQy2Nbd/tbl2C9rj992bi58A8"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "transaction_id": "={{ $('Get High Risk Transactions').item.json.fields.transaction_id }}",
+            "status": "={{ $json.fields.transaction_id }}"
+          },
+          "matchingColumns": [
+            "transaction_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "transaction_id",
+              "displayName": "transaction_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "amount",
+              "displayName": "amount",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "merchant",
+              "displayName": "merchant",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "risk_score",
+              "displayName": "risk_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "anomaly_flags",
+              "displayName": "anomaly_flags",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "ai_explanation",
+              "displayName": "ai_explanation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        16
+      ],
+      "id": "ce99ed9b-229f-47d9-a32c-214072f1ddb2",
+      "name": "Update Transaction Status",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EPZNUuivnSzdnhow",
+          "name": "Final Airtable Capstone"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get High Risk Transactions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get High Risk Transactions": {
+      "main": [
+        [
+          {
+            "node": "Loop Cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Cases": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Create Case",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Case": {
+      "main": [
+        [
+          {
+            "node": "Update Transaction Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Transaction Status": {
+      "main": [
+        [
+          {
+            "node": "Loop Cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "218b0fbc-5f0f-4dfb-b28d-31a1e435ea9f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a69ec37954977b88a479ebfa185a30fc778ae1a13872bdbe9e26e7b8edafd875"
+  },
+  "id": "khVcpkTMDIRMezOD",
+  "tags": []
+}

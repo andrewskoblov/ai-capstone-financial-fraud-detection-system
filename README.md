@@ -1,3 +1,7 @@
+## Demo Video
+[SentinelIQ - AI-Powered Financial Fraud Detection System Demo](https://youtu.be/4R_ZzkkCM54)
+
+
 # Financial Fraud Detection System
 
 An AI-assisted financial fraud detection pipeline that ingests transaction data, analyzes risk, generates plain-English fraud explanations, and gives analysts a Streamlit dashboard for reviewing and managing investigation cases.

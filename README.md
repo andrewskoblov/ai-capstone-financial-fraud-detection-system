@@ -8,7 +8,7 @@ An AI-assisted financial fraud detection pipeline that ingests transaction data,
 |---|---|---|
 | Ergi Sula | Transaction Ingestion | @ErgiS13 |
 | Thomas Kamel | Anomaly Detection & AI Analysis | @thomaskamel |
-| Andrew Skoblov | Case Management & Dashboard | @andrewskoblov |
+| Andrew Skoblov & Ergi Sula | Case Management & Dashboard | @andrewskoblov |
 
 ## Problem
 
@@ -44,7 +44,7 @@ This project solves that by connecting three components:
 
 ### Component 3: Case Management & Dashboard
 
-**Owner:** Andrew Skoblov  
+**Owner:** Andrew Skoblov & Ergi Sula 
 **Tools:** Airtable, Streamlit, Python  
 **Purpose:** Give analysts a dashboard to review high-risk cases, filter alerts, update statuses, assign cases, create manual cases, export case data, and view fraud trends.
 

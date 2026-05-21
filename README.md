@@ -38,6 +38,7 @@ Fraud analysts at small-to-mid-size financial institutions or fintech companies 
 - **Input:** Enriched records from Airtable (risk_score, anomaly_flags, ai_explanation)
 - **Output:** Investigation cases in Airtable + interactive dashboard with alert feed, severity filtering, and trend charts
 - **Standalone demo:** Launch the Streamlit app connected to Airtable and demonstrate filtering alerts by risk level and marking a case as resolved
+- **Dashboard app:** [`case-management-dashboard/dashboard.py`](case-management-dashboard/dashboard.py)
 
 ## Data Sources
 - **Primary data:** Simulated transaction records generated for testing

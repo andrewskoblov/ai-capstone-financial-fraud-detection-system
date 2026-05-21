@@ -1,73 +1,114 @@
 # Financial Fraud Detection System
 
-## Team Members
-| Name           | Role/Component                   | GitHub Username |
-|----------------|----------------------------------|-----------------|
-| Ergi Sula      | Transaction Ingestion            | @ErgiS13        |
-| Thomas Kamel   | Anomaly Detection & AI Analysis  | @thomaskamel    |
-| Andrew Skoblov | Case Management & Dashboard      | @andrewskoblov  |
+An AI-assisted financial fraud detection pipeline that ingests transaction data, analyzes risk, generates plain-English fraud explanations, and gives analysts a Streamlit dashboard for reviewing and managing investigation cases.
 
-## Problem Statement
-Financial institutions process thousands of transactions daily, making it impossible for analysts to manually review each one for fraudulent activity. Current rule-based systems generate excessive false positives and lack the ability to explain why a transaction was flagged. This project builds an AI-powered pipeline that automatically detects anomalous transactions, generates human-readable explanations, and surfaces them in a prioritized investigation dashboard.
+## Team
 
-## Target Users
-Fraud analysts at small-to-mid-size financial institutions or fintech companies who need to review flagged transactions efficiently. Specifically, analysts who manage an investigation queue and need to quickly determine which cases require immediate action versus routine review.
+| Name | Component | GitHub |
+|---|---|---|
+| Ergi Sula | Transaction Ingestion | @ErgiS13 |
+| Thomas Kamel | Anomaly Detection & AI Analysis | @thomaskamel |
+| Andrew Skoblov | Case Management & Dashboard | @andrewskoblov |
+
+## Problem
+
+Financial institutions process large volumes of transactions every day. Analysts need a faster way to identify suspicious activity, understand why a transaction was flagged, and manage follow-up investigations without manually sorting through every record.
+
+This project solves that by connecting three components:
+
+1. Transaction ingestion
+2. Anomaly detection and AI explanation
+3. Case management and dashboard review
 
 ## Architecture
+
 ![Architecture Diagram](architecture.png)
 
-## Component Breakdown
+## Components
 
-### Component 1: Transaction Ingestion (Owner: Ergi Sula)
-- **Description:** Parses simulated transaction feeds and account activity records into a normalized schema stored in Airtable
-- **Tools:** n8n, Airtable
-- **Input:** Raw transaction CSV files or webhook-delivered JSON records
-- **Output:** Structured transaction records in Airtable (transaction_id, amount, timestamp, account_id, merchant, location)
-- **Standalone demo:** Manually trigger the n8n workflow with a sample CSV and show records appearing in Airtable
+### Component 1: Transaction Ingestion
 
-### Component 2: Anomaly Detection & AI Analysis (Owner: Thomas Kamel)
-- **Description:** Analyzes normalized transactions for anomalous patterns (unusual amounts, frequency, location) and uses an LLM to generate a plain-English explanation of why each transaction was flagged
-- **Tools:** n8n, Groq, Hugging Face
-- **Input:** Structured transaction records from Airtable
-- **Output:** Enriched records with risk_score, anomaly_flags, and ai_explanation fields written back to Airtable
-- **Standalone demo:** Run the workflow against 10 sample transactions and show the enriched Airtable records with explanations
+**Owner:** Ergi Sula  
+**Tools:** n8n, Airtable  
+**Purpose:** Parse simulated transaction data and store normalized records in Airtable.
 
-### Component 3: Case Management & Dashboard (Owner: Andrew Skoblov)
-- **Description:** Creates investigation cases for high-risk transactions and provides a Streamlit dashboard for analysts to review the fraud alert queue, update case statuses, and view trend analytics
-- **Tools:** n8n, Airtable, Streamlit
-- **Input:** Enriched records from Airtable (risk_score, anomaly_flags, ai_explanation)
-- **Output:** Investigation cases in Airtable + interactive dashboard with alert feed, severity filtering, and trend charts
-- **Standalone demo:** Launch the Streamlit app connected to Airtable and demonstrate filtering alerts by risk level and marking a case as resolved
-- **Dashboard app:** [`case-management-dashboard/dashboard.py`](case-management-dashboard/dashboard.py)
+**Output fields include:** `transaction_id`, `amount`, `timestamp`, `account_id`, `merchant`, and `location`.
+
+### Component 2: Anomaly Detection & AI Analysis
+
+**Owner:** Thomas Kamel  
+**Tools:** n8n, Groq, Hugging Face  
+**Purpose:** Analyze transactions for unusual patterns and generate a human-readable fraud explanation.
+
+**Output fields include:** `risk_score`, `anomaly_flags`, and `ai_explanation`.
+
+### Component 3: Case Management & Dashboard
+
+**Owner:** Andrew Skoblov  
+**Tools:** Airtable, Streamlit, Python  
+**Purpose:** Give analysts a dashboard to review high-risk cases, filter alerts, update statuses, assign cases, create manual cases, export case data, and view fraud trends.
+
+Dashboard folder: [`case-management-dashboard`](case-management-dashboard)  
+Dashboard app: [`case-management-dashboard/dashboard.py`](case-management-dashboard/dashboard.py)
+
+## Dashboard Quick Start
+
+```bash
+cd case-management-dashboard
+pip install -r requirements.txt
+set AIRTABLE_TOKEN=your_personal_access_token
+set AIRTABLE_BASE_ID=appOBt37iEsQy2Nbd
+streamlit run dashboard.py
+```
+
+On macOS/Linux, use `export` instead of `set`.
+
+Full dashboard setup and presentation instructions are in [`case-management-dashboard/README.md`](case-management-dashboard/README.md).
+
+## Dashboard Demo Flow
+
+For a short project presentation, show the dashboard in this order:
+
+1. **Overview:** explain the total transactions, analyzed transactions, escalated transactions, and open cases.
+2. **Alert Queue:** filter by risk score, open a high-risk case, show the AI explanation, and update the status.
+3. **Case Manager:** show the full cases table, export CSV button, and manual case creation form.
+4. **Analytics:** show risk distribution, transaction status breakdown, top flagged merchants, and top flagged locations.
+
+Suggested talk track:
+
+> “My component turns AI-scored transactions into an analyst workflow. Instead of only seeing a risk score, the analyst can review cases, read the AI explanation, assign ownership, resolve cases, and monitor trends from one dashboard.”
 
 ## Data Sources
-- **Primary data:** Simulated transaction records generated for testing
-- **Sample data:** CSV files with fields: transaction_id, timestamp, account_id, amount, merchant, location, is_fraud (ground truth label)
-- **Data format:** CSV for ingestion, JSON via Airtable API between components
 
-## AI Capabilities
-| Capability | Purpose | Model/API |
-|-----------|---------|-----------|
-| Anomaly Scoring | Flag transactions that deviate from normal patterns | Groq LLaMA (rule-assisted) |
-| Natural Language Explanation | Generate human-readable reason for each flag | Groq LLaMA-3 |
-| Sentiment / Text Classification | Classify transaction descriptions for risk signals | Hugging Face distilbert |
+- Simulated transaction records for testing
+- Airtable tables for shared component data
+- CSV sample data in [`transactions_sample.csv`](transactions_sample.csv)
 
 ## Success Criteria
-1. Ingestion workflow successfully parses and stores at least 50 sample transactions in Airtable
-2. Anomaly detection correctly flags at least 8 out of 10 known fraudulent transactions in test data
-3. LLM generates a clear explanation for every flagged transaction within 5 seconds
-4. Dashboard displays full alert queue with working filters for risk level and case status
-5. All 3 components exchange data correctly end-to-end in an integration test
 
-## Timeline
-| Week | Milestone |
-|------|-----------|
-| 3 (Now) | Project proposal + architecture diagram + GitHub repo |
-| 4-6 | Build individual components, test with sample data |
-| 7-9 | Add LLM/agent capabilities, refine AI processing |
-| 10-12 | Integration, error handling, dashboard/UI |
-| 13-14 | Polish, documentation, demo preparation |
-| 15 | Final presentation |
+1. Ingestion workflow stores transaction records in Airtable.
+2. AI analysis flags suspicious transactions and writes risk scores/explanations.
+3. Dashboard displays the case queue with working filters.
+4. Analysts can update case status and assignee from the dashboard.
+5. The three components exchange data through the shared Airtable base.
 
-## Reflection
-Our group picked the Financial Fraud Detection System because we all found the problem interesting and felt it matched the tools we are learning in this course. We split the work based on what each person wanted to focus on, with Ergi taking data ingestion, Thomas handling the AI analysis, and Andrew building the dashboard and case management side. One thing we think could be tricky is making sure the data passing between components stays consistent, so we plan to agree on a shared record format early on. Overall we feel good about the project and think it will give us something practical to show in our portfolios.
+## Repository Layout
+
+```text
+.
+├── case-management-dashboard/
+│   ├── dashboard.py
+│   ├── requirements.txt
+│   └── README.md
+├── transaction-ingestion/
+├── docs/
+├── architecture.png
+├── transactions_sample.csv
+└── README.md
+```
+
+## Notes
+
+- Airtable credentials are not stored in this repository.
+- Set `AIRTABLE_TOKEN` locally or through Streamlit secrets before running the dashboard.
+- The dashboard refreshes Airtable data every 30 seconds through Streamlit caching.
